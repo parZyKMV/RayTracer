@@ -2,6 +2,9 @@
 #include <SDL3/SDL.h>
 #include <glm/glm.hpp>
 #include <algorithm>
+#include "Ray.h"
+#include "Vector3.h"
+
 
 // use alias to clarify type name
 using color3_t = glm::vec3;
@@ -45,3 +48,4 @@ inline color4_t ColorConvert(const SDL_Color& color)
 
 	return color4;
 }
+

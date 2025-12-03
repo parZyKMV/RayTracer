@@ -1,5 +1,7 @@
 #include "Renderer.h"
 #include "Framebuffer.h"
+#include "Camera.h"
+#include <SDL3/SDL.h>
 
 #include <iostream>
 
@@ -13,6 +15,11 @@ int main() {
 	renderer.CreateWindow("Ray Tracer", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	Framebuffer framebuffer(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	float aspectRatio = float(SCREEN_WIDTH) / float(SCREEN_HEIGHT);
+	Camera camera(70.0f, aspectRatio);
+	camera.SetView({ 0, 0, 5 }, { 0, 0, 0 });
+
 
 	SDL_Event event;
 	bool quit = false;
@@ -29,9 +36,8 @@ int main() {
 			}
 		}
 
-		// draw to frame buffer
-		framebuffer.Clear({ 0, 0, 0, 255 });
-		for (int i = 0; i < 300; i++) framebuffer.DrawPoint(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT, { 255, 255, 255, 255 });
+		
+
 
 		// update frame buffer, copy buffer pixels to texture
 		framebuffer.Update();
