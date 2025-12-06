@@ -13,7 +13,7 @@ public:
 		radius(radius)
 	{ }
 
-	bool Hit(const ray_t& ray, float minDistance, float maxDistance, ray_t::raycastHit_t raycastHit) override;
+	bool Hit(const ray_t& ray, float minDistance, float maxDistance, ray_t::raycastHit_t& raycastHit) override;
 
 public:
 	glm::vec3 position;

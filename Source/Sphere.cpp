@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include "Color.h"
 
-bool Sphere::Hit(const ray_t& ray, float minDistance, float maxDistance, ray_t::raycastHit_t raycastHit)
+bool Sphere::Hit(const ray_t& ray, float minDistance, float maxDistance, ray_t::raycastHit_t& raycastHit)
 {
     // vector desde el centro de la esfera hacia el rayo
     glm::vec3 oc = ray.origin - position;

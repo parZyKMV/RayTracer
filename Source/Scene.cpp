@@ -37,33 +37,34 @@ color3_t Scene::Trace(const ray_t& ray, float minDistance, float maxDistance, ra
     bool rayHit = false;
     float closestDistance = maxDistance;
 
-    // check if scene objects are hit by the ray
+    
     for (auto& object : objects) {
-        // when checking objects don't include objects farther than closest hit (starts at max distance)
         if (object->Hit(ray, minDistance, closestDistance, raycastHit)) {
             rayHit = true;
-            // set closest distance to the raycast hit distance (only hit objects closer than closest distance)
-            closestDistance = raycastHit.distance;   //  <<<<<< AQUI ESTABA LO QUE FALTABA
+            closestDistance = raycastHit.distance;
         }
     }
 
-    // check if ray hit object
     if (rayHit) {
-        // get material color of hit object
-        color3_t color = raycastHit.color;
-        return color;
+        
+        color3_t normalColor = 0.5f * (raycastHit.normal + glm::vec3{ 1.0f, 1.0f, 1.0f });
+
+        
+        float shade = glm::clamp(1.0f - raycastHit.distance * 0.1f, 0.0f, 1.0f);
+        color3_t distanceColor = glm::vec3{ shade };
+
+        
+         return normalColor;     
+        //return distanceColor;   
+
+        
+        // return raycastHit.color;
     }
 
-    // draw sky colors based on the ray y position
+    
     glm::vec3 direction = glm::normalize(ray.direction);
-
-    // shift direction y from -1 <-> 1 to 0 <-> 1
     float t = (direction.y + 1) * 0.5f;
-
-    // interpolate between sky bottom (0) to sky top (1)
-    color3_t color = glm::mix(skyBottom, skyTop, t);
-
-    return color;
+    return glm::mix(skyBottom, skyTop, t);
 }
 
 
