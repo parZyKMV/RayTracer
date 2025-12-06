@@ -1,31 +1,51 @@
 #include "Scene.h"
 #include "Framebuffer.h"
 #include "Camera.h"
+#include "Random.h"
 #include "Color.h"
 #include "Object.h"
 #include <iostream>
 
-void Scene::Render(Framebuffer& framebuffer, const Camera& camera) {
-	// trace ray for every framebuffer pixel
-	for (int y = 0; y < framebuffer.height; y++) {
-		for (int x = 0; x < framebuffer.width; x++)	{
-			// set pixel (x,y) coordinates)
-			glm::vec2 pixel{ x, y };
-			// normalize (0 <-> 1) the pixel value (pixel / vec2{ framebuffer.width, framebuffer.height }
-			glm::vec2 point = pixel / glm::vec2{ framebuffer.width, framebuffer.height };
-			// flip the y value (bottom = 0, top = 1)
-			point.y = 1 - point.y;
+void Scene::Render(Framebuffer& framebuffer, const Camera& camera,int numSamples) {
+    for (int y = 0; y < framebuffer.height; y++) {
+        for (int x = 0; x < framebuffer.width; x++) {
 
-			// get ray from camera
-			ray_t ray = camera.GetRay(point);
-			// trace ray
-			ray_t::raycastHit_t raycastHit;
-			// 0 = min ray distance, 100 = max ray distance
-			color3_t color = Trace(ray, 0, 100, raycastHit);
+            // Color acumulado para este pixel
+            color3_t color{ 0.0f };
 
-			framebuffer.DrawPoint(x, y, ColorConvert(color));
-		}
-	}
+            // Multi-sample
+            for (int s = 0; s < numSamples; s++) {
+                glm::vec2 pixel{ static_cast<float>(x), static_cast<float>(y) };
+
+                // Añadir jitter aleatorio 0-1
+                pixel += glm::vec2{
+                    random::getReal(0.0f, 1.0f),
+                    random::getReal(0.0f, 1.0f)
+                };
+
+                // Normalizar coordenadas 0-1
+                glm::vec2 point = pixel / glm::vec2{ static_cast<float>(framebuffer.width),
+                                                     static_cast<float>(framebuffer.height) };
+                // Flip Y
+                point.y = 1.0f - point.y;
+
+                // Obtener rayo de la cámara
+                ray_t ray = camera.GetRay(point);
+
+                // RaycastHit para esta muestra
+                ray_t::raycastHit_t raycastHit;
+
+                // Trace
+                color += Trace(ray, 0.0f, 100.0f, raycastHit);
+            }
+
+            // Promedio de color por número de muestras
+            color /= static_cast<float>(numSamples);
+
+            // Dibujar pixel en framebuffer
+            framebuffer.DrawPoint(x, y, ColorConvert(color));
+        }
+    }
 }
 
 void Scene::AddObject(std::shared_ptr<class Object> object){
