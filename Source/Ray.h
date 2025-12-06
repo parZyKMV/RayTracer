@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 
 struct ray_t {
-
     glm::vec3 origin{ 0.0f };
     glm::vec3 direction{ 0.0f };
 
@@ -26,5 +25,6 @@ struct ray_t {
         glm::vec3 normal{ 0.0f };
         float distance{ 0.0f };
         
+		color3_t color;
     };
 };
